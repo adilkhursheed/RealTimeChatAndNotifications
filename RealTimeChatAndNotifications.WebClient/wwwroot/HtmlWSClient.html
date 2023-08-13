@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+
+</head>
+<body>
+    <h3> Send Notification </h3>
+    <input type="text" name="message" value="" id="message" />
+    <button onclick="notify()">Notify</button>
+    <br />
+    <h3>Notifications</h3>
+    <ul id="messageList">
+        <li></li>
+    </ul>
+
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("wss://localhost:7091/notifications-hub", {
+                skipNegotiation: true,
+                transport: signalR.HttpTransportType.WebSockets
+            })
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        async function start() {
+            try {
+                await connection.start();
+                console.log("SignalR Connected.");
+
+                connection.on("BroadCastNotificaiton", (user, message) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${user}: ${message}`;
+                    document.getElementById("messageList").appendChild(li);
+                });
+            } catch (err) {
+                console.log(err);
+                setTimeout(start, 5000);
+            }
+        };
+
+        //connection.onclose(async () => {
+        //    await start();
+        //});
+
+        // Start the connection.
+        start();
+
+        async function notify(){
+           var input= document.getElementById("message");
+            try {
+                await connection.invoke("BroadCastNotificaiton", input.value);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>
