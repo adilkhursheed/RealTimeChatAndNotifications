@@ -12,7 +12,7 @@ namespace RealTimeChatAndNotifications.Backend.Controllers
         {
             _logger = logger;
         }
-
+        [HttpGet("Get")]
         public IActionResult Get()
         {
             return Ok();

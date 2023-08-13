@@ -8,7 +8,8 @@ namespace RealTimeChatAndNotifications.Backend.Notifications
 
         public async Task BroadCastNotificaiton(string notification)
         {
-            await Clients.All.SendAsync("NotificationReceived", notification);
+            
+            await Clients.AllExcept(Context.ConnectionId).SendAsync("BroadCastNotificaiton", notification);
         }
     }
 }
